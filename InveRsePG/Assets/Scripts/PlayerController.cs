@@ -6,18 +6,22 @@ public class PlayerController : MonoBehaviour
 
 	private Vector2 pos;
 	private bool moving = false;
+	public bool inBattle = false;
 
 
 	void Start () 
 	{
+
         pos = transform.position;
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () 
 	{
 		CheckInput();
-
+		
 		if(moving)
 		{
 
@@ -48,5 +52,15 @@ public class PlayerController : MonoBehaviour
 			pos -= Vector2.up;
 		}
 		moving = true;
+	}
+
+	void OnCollisionEnter2D(Collision2D coll)
+	{
+		if(coll.gameObject.tag.Equals("Enemy"))
+		{
+			inBattle = true;
+			Debug.Log("touch");
+		}
+		Debug.Log("no touch");
 	}
 }
