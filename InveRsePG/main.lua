@@ -1,11 +1,11 @@
 require('camera')
 require('player')
+require('map')
 --[[todo: 	character sprite
 			map
 			enemies
 			battle system
 	]]
-
 
 function love.load()
 	camera:setPosition(player.grid_x- love.window.getWidth()/2+32,player.grid_y- love.window.getHeight()/2+32)
@@ -13,14 +13,15 @@ end
 
 function love.update(dt)
 	player.act_y = player.act_y - ((player.act_y - 
-		player.grid_y) * player.speed * dt)
+		player.grid_y) * player.speed * (dt/2))
 	player.act_x = player.act_x - ((player.act_x - 
-		player.grid_x) * player.speed * dt)	
+		player.grid_x) * player.speed * (dt/2))	
 end
 
 function love.draw()
 	camera:set()
 	love.graphics.rectangle("fill", player.act_x, player.act_y, 32, 32)
+	love.graphics.setBackgroundColor(0x80,0x80,0x80)
 	camera:unset()
 end
 
