@@ -1,11 +1,13 @@
 require('camera')
 require('player')
-
+require('other')
+otherList={}
+numOthers=0
 
 function love.load()
-	hero = love.graphics.newImage("hero.png")
+	square = love.graphics.newImage("square.png")
 	camera:setPosition(player.grid_x- love.window.getWidth()/2+16,player.grid_y- love.window.getHeight()/2+16)
-	player.color_xLeft = love.window.getWidth()/2-16
+	--[[player.color_xLeft = love.window.getWidth()/2-16
 	player.color_xRight = love.window.getWidth()/2+16
 	player.color_yUp = love.window.getHeight()/2-16
 	player.color_yDown = love.window.getHeight()/2+16
@@ -28,38 +30,26 @@ function love.load()
 			return pixel*color;
 		}]]
 	updateColor(player.red,player.green,player.blue,player.alpha)
+	loadOthers(55)
 end
 
 function love.update(dt)
-	player.act_y = player.act_y - ((player.act_y - 
-		player.grid_y) * player.speed * (dt/2))
-	player.act_x = player.act_x - ((player.act_x - 
-		player.grid_x) * player.speed * (dt/2))	
-	player.color_xLeft = player.color_xLeft - ((player.color_xLeft -
-		player.grid_x) * player.speed * (dt/2))
-	player.color_xRight = player.color_xRight - ((player.color_xRight -
-		player.grid_x) * player.speed * (dt/2))
-	player.color_yUp = player.color_yUp - ((player.color_yUp -
-		player.grid_y) * player.speed * (dt/2))
-	player.color_yDown = player.color_yDown - ((player.color_yDown -
-		player.grid_y) * player.speed * (dt/2))
-	--myShader:send("playerXLeft",player.color_xLeft)
-	--myShader:send("playerXRight",player.color_xRight)
-	--myShader:send("playerYUp",player.color_yUp)
-	--myShader:send("playerYDown",player.color_yDown)
+	
 end
 
 function love.draw()
 	camera:set()
-	love.graphics.setShader(myShader)
-	love.graphics.draw(hero,player.grid_x,player.grid_y)
-	love.graphics.rectangle("fill", 256, 256, 32, 32)
-	love.graphics.print("Player.act_x: "..player.act_x,0,0)
-	love.graphics.print("Player.act_y: "..player.act_y,0,10)
-	love.graphics.print("Player.grid_x: "..player.grid_x,0,20)
-	love.graphics.print("Player.grid_y: "..player.grid_y,0,30)
+	--love.graphics.setShader(myShader)
+	love.graphics.setColor(player.red, player.green, player.blue, player.alpha)
+	love.graphics.draw(square,player.grid_x,player.grid_y)
+	for i=1,numOthers do 
+		love.graphics.setColor(otherList[i][3],otherList[i][4],otherList[i][5],otherList[i][6])
+		love.graphics.draw(square,otherList[i][1]*32,otherList[i][2]*32)
+	end 
+	love.graphics.print("Player.grid_x: "..player.grid_x,0)
+	love.graphics.print("Player.grid_y: "..player.grid_y,0,10)
 	camera:unset()
-	love.graphics.setShader()
+	--love.graphics.setShader()
 end
 
 function love.keypressed(key)
@@ -76,29 +66,35 @@ function love.keypressed(key)
     	player.grid_x = player.grid_x + 32
     	camera:move(32,0)
     elseif key == " " then
-    	updateColor(255,0,0,1)
+    	updateColor(255,0,0,255)
     elseif key == "l" then
-    	updateColor(0,255,0,1)
+    	updateColor(0,255,0,255)
     elseif key == "k" then
-    	updateColor(0,0,255,1)
+    	updateColor(0,0,255,255)
     end 
 
 end
 
-function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
-  return x1 < x2+w2 and
-         x2 < x1+w1 and
-         y1 < y2+h2 and
-         y2 < y1+h1
+function CheckCollision(gx1,gy1,gx2,gy2)
+	return (gx1 == gx2 and gy1 == gy2)
 end
+
+
+function loadOthers(num)
+	for i=1,num do
+		otherList[i]={--[[grid_x]]math.random(1,12),--[[grid_y]]math.random(1,9),--[[red]]math.random(1,255),--[[green]]math.random(1,255),--[[blue]]math.random(1,255),--[[alpha]]255}		
+		numOthers = numOthers + 1
+	end
+end 
+
 
 function updateColor(r,g,b,a)
 	player.red = (player.red + r)/2
 	player.green = (player.green + g)/2
 	player.blue = (player.blue + b)/2
 	player.alpha = (player.alpha + a)/2
-	myShader:send("red",(player.red/255))
-	myShader:send("green",(player.green/255))
-	myShader:send("blue",(player.blue/255))
-	myShader:send("alpha",player.alpha)
+	--myShader:send("red",(player.red/255))
+	--myShader:send("green",(player.green/255))
+	--myShader:send("blue",(player.blue/255))
+	--myShader:send("alpha",player.alpha)
 end

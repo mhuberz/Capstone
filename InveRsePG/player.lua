@@ -1,13 +1,10 @@
 player = {}
 player.grid_x = 0
 player.grid_y = 0
-player.act_x = 0
-player.act_y = 0
-player.speed = 8
 player.red = 255
 player.green = 255
 player.blue = 255
-player.alpha = 1
+player.alpha = 255
 player.color_xLeft = 0
 player.color_xRight = 0
 player.color_yUp = 0
