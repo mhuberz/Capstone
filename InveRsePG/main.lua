@@ -30,7 +30,7 @@ function love.load()
 			return pixel*color;
 		}]]
 	updateColor(player.red,player.green,player.blue,player.alpha)
-	loadOthers(55)
+	loadOthers(100)
 end
 
 function love.update(dt)
@@ -40,14 +40,14 @@ end
 function love.draw()
 	camera:set()
 	--love.graphics.setShader(myShader)
-	love.graphics.setColor(player.red, player.green, player.blue, player.alpha)
-	love.graphics.draw(square,player.grid_x,player.grid_y)
 	for i=1,numOthers do 
 		love.graphics.setColor(otherList[i][3],otherList[i][4],otherList[i][5],otherList[i][6])
 		love.graphics.draw(square,otherList[i][1]*32,otherList[i][2]*32)
 	end 
-	love.graphics.print("Player.grid_x: "..player.grid_x,0)
-	love.graphics.print("Player.grid_y: "..player.grid_y,0,10)
+	love.graphics.setColor(player.red, player.green, player.blue, player.alpha)
+	love.graphics.draw(square,player.grid_x,player.grid_y)
+	--love.graphics.print("Player.grid_x: "..player.grid_x,0)
+	--love.graphics.print("Player.grid_y: "..player.grid_y,0,10)
 	camera:unset()
 	--love.graphics.setShader()
 end
@@ -75,17 +75,34 @@ function love.keypressed(key)
 
 end
 
-function CheckCollision(gx1,gy1,gx2,gy2)
-	return (gx1 == gx2 and gy1 == gy2)
-end
-
 
 function loadOthers(num)
 	for i=1,num do
-		otherList[i]={--[[grid_x]]math.random(1,12),--[[grid_y]]math.random(1,9),--[[red]]math.random(1,255),--[[green]]math.random(1,255),--[[blue]]math.random(1,255),--[[alpha]]255}		
-		numOthers = numOthers + 1
+		x = math.random(-12,12)
+		y = math.random(-9,9)
+		if (checkOverlap(x,y) == false) then 
+			otherList[i]={--[[grid_x]]x,--[[grid_y]]y,--[[red]]math.random(1,255),--[[green]]math.random(1,255),--[[blue]]math.random(1,255),--[[alpha]]255}		
+			numOthers = numOthers + 1
+		else
+			i = i - 1
+		end 
 	end
 end 
+
+function checkOverlap(x,y)
+	if (not numOthers == 0) then 
+		for i=1,numOthers do
+			if(not otherList[i] == nil)then
+				if (otherList[i][1] == x) then 
+					if (otherList[i][2] == y) then
+						return true
+					end 
+				end 
+			end
+		end
+	end
+	return false
+end
 
 
 function updateColor(r,g,b,a)
