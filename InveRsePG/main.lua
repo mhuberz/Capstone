@@ -78,10 +78,10 @@ end
 
 function loadOthers(num)
 	for i=1,num do
-		x = math.random(-12,12)
-		y = math.random(-9,9)
+		x = love.math.random(-12,12)
+		y = love.math.random(-9,9)
 		if (checkOverlap(x,y) == false) then 
-			otherList[i]={--[[grid_x]]x,--[[grid_y]]y,--[[red]]math.random(1,255),--[[green]]math.random(1,255),--[[blue]]math.random(1,255),--[[alpha]]255}		
+			otherList[i]={--[[grid_x]]x,--[[grid_y]]y,--[[red]]love.math.random(1,255),--[[green]]love.math.random(1,255),--[[blue]]love.math.random(1,255),--[[alpha]]255}		
 			numOthers = numOthers + 1
 		else
 			i = i - 1
@@ -115,3 +115,7 @@ function updateColor(r,g,b,a)
 	--myShader:send("blue",(player.blue/255))
 	--myShader:send("alpha",player.alpha)
 end
+
+function love.quit()
+	otherList = {}
+end 
