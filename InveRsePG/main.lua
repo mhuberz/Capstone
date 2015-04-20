@@ -29,9 +29,11 @@ function love.load()
 			}
 			return pixel*color;
 		}]]
-	updateColor(player.red,player.green,player.blue,player.alpha)
-	loadOthers(100)
+	--updateColor(player.red,player.green,player.blue,player.alpha)
+	loadOthers(20)
+	debug.debug()
 end
+
 
 function love.update(dt)
 	
@@ -46,8 +48,6 @@ function love.draw()
 	end 
 	love.graphics.setColor(player.red, player.green, player.blue, player.alpha)
 	love.graphics.draw(square,player.grid_x,player.grid_y)
-	--love.graphics.print("Player.grid_x: "..player.grid_x,0)
-	--love.graphics.print("Player.grid_y: "..player.grid_y,0,10)
 	camera:unset()
 	--love.graphics.setShader()
 end
@@ -56,24 +56,32 @@ function love.keypressed(key)
 	if key == "w" then 
 		player.grid_y = player.grid_y - 32
 		camera:move(0,-32) 
+		updateColor(checkCollision(player.grid_x,player.grid_y))
 	elseif key == "s" then
 		player.grid_y = player.grid_y + 32
 		camera:move(0,32)
+		updateColor(checkCollision(player.grid_x,player.grid_y))
 	elseif key == "a" then 
 		player.grid_x = player.grid_x - 32
 		camera:move(-32,0)
+		updateColor(checkCollision(player.grid_x,player.grid_y))
     elseif key == "d" then 
     	player.grid_x = player.grid_x + 32
     	camera:move(32,0)
-    elseif key == " " then
-    	updateColor(255,0,0,255)
-    elseif key == "l" then
-    	updateColor(0,255,0,255)
-    elseif key == "k" then
-    	updateColor(0,0,255,255)
-    end 
-
+    	updateColor(checkCollision(player.grid_x,player.grid_y))
+    elseif key == "escape" then 
+    	love.event.quit()
+    end 	
 end
+
+function checkCollision(x,y)
+	for i=1,numOthers do 
+		if (x == otherList[i][1]*32 and y == otherList[i][2]*32) then 
+			return i 
+		end 
+	end 
+	return 0
+end 
 
 
 function loadOthers(num)
@@ -84,37 +92,43 @@ function loadOthers(num)
 			otherList[i]={--[[grid_x]]x,--[[grid_y]]y,--[[red]]love.math.random(1,255),--[[green]]love.math.random(1,255),--[[blue]]love.math.random(1,255),--[[alpha]]255}		
 			numOthers = numOthers + 1
 		else
-			i = i - 1
+			num = num + 1
 		end 
 	end
 end 
 
-function checkOverlap(x,y)
-	if (not numOthers == 0) then 
+function checkOverlap(x,y)--fix this
+	if (numOthers > 0) then 
 		for i=1,numOthers do
-			if(not otherList[i] == nil)then
-				if (otherList[i][1] == x) then 
-					if (otherList[i][2] == y) then
-						return true
-					end 
-				end 
-			end
+			if (x == otherList[i][1] and y == otherList[i][2]) then
+				return true 
+			end 
 		end
 	end
 	return false
 end
 
 
-function updateColor(r,g,b,a)
-	player.red = (player.red + r)/2
-	player.green = (player.green + g)/2
-	player.blue = (player.blue + b)/2
-	player.alpha = (player.alpha + a)/2
-	--myShader:send("red",(player.red/255))
-	--myShader:send("green",(player.green/255))
-	--myShader:send("blue",(player.blue/255))
-	--myShader:send("alpha",player.alpha)
+function updateColor(i)
+	if (i >= 1) then 
+		player.red = (player.red + otherList[i][3])/2
+		player.green = (player.green + otherList[i][4])/2
+		player.blue = (player.blue + otherList[i][5])/2
+		player.alpha = (player.alpha + otherList[i][6])/2
+		removeOther(i)
+	end 
 end
+
+function removeOther(num)
+	for i = num,numOthers do 
+		if (i==numothers) then 
+			otherList[i] = {}
+		else 
+			otherList[i] = otherList[i+1]
+		end 
+	end 
+	numOthers = numOthers - 1
+end 
 
 function love.quit()
 	otherList = {}
